@@ -1,0 +1,3 @@
+# py compile files
+*.pyc
+ripestat-wrapper/__pycache__/*
