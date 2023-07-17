@@ -1,3 +1,6 @@
 # py compile files
 *.pyc
 ripestat-wrapper/__pycache__/*
+
+# gitignore
+.gitignore
