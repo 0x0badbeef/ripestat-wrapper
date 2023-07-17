@@ -1,10 +1,12 @@
-import endpoints
+from ripestat_wrapper import endpoints
 import requests
 import time
 
-from RIPEStatReturn import RIPEStatReturn
-from BGP import BGPRecord, BGPUpdateRecord
-from prefix import Prefix
+from ripestat_wrapper.RIPEStatReturn import RIPEStatReturn
+from ripestat_wrapper.BGP import BGPRecord, BGPUpdateRecord
+from ripestat_wrapper.prefix import Prefix
+
+Session = requests.Session()
 
 class RIPEStatRequestObj:
     def __init__(self,
@@ -21,7 +23,11 @@ class RIPEStatRequestObj:
 
     def get_request(self, endpoint):
         start_time = time.time()
-        resp = requests.get(endpoint)
+        resp = Session.get(endpoint)
+        while resp.status_code == 400:
+            time.sleep(5)
+            print(endpoint)
+            resp = Session.get(endpoint)
         respObj = RIPEStatReturn(resp)
         end_time = time.time()
         data = respObj.get_data()
