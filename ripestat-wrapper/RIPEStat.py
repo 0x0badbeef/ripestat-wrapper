@@ -10,8 +10,7 @@ class RIPEStatRequestObj:
     def __init__(self,
                  starttime=None,
                  endtime=None,
-                 resource=None,
-                 timestamp=None
+                 resource=None
                  ):
         self.starttime = starttime
         self.endtime = endtime
