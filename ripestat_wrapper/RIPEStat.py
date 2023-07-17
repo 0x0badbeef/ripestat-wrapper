@@ -5,6 +5,7 @@ import time
 from ripestat_wrapper.RIPEStatReturn import RIPEStatReturn
 from ripestat_wrapper.BGP import BGPRecord, BGPUpdateRecord
 from ripestat_wrapper.prefix import Prefix
+from ripestat_wrapper.sourceapp import SOURCEAPP  # register a sourceapp tagname with RIPEStat if making over 1k API calls a day
 
 Session = requests.Session()
 
@@ -23,11 +24,11 @@ class RIPEStatRequestObj:
 
     def get_request(self, endpoint):
         start_time = time.time()
-        resp = Session.get(endpoint)
+        resp = Session.get(endpoint + f'&sourceapp={SOURCEAPP}')
         while resp.status_code == 400:
             time.sleep(5)
             print(endpoint)
-            resp = Session.get(endpoint)
+            resp = Session.get(endpoint + f'&sourceapp={SOURCEAPP}')
         respObj = RIPEStatReturn(resp)
         end_time = time.time()
         data = respObj.get_data()
