@@ -1,19 +1,23 @@
 from ripestat_wrapper import endpoints
 import requests
 import time
+from urllib3.exceptions import ReadTimeoutError
 
 from ripestat_wrapper.RIPEStatReturn import RIPEStatReturn
 from ripestat_wrapper.BGP import BGPRecord, BGPUpdateRecord
 from ripestat_wrapper.prefix import Prefix
 from ripestat_wrapper.sourceapp import SOURCEAPP  # register a sourceapp tagname with RIPEStat if making over 1k API calls a day
 
+global Session
 Session = requests.Session()
 
 class RIPEStatRequestObj:
     def __init__(self,
                  starttime=None,
                  endtime=None,
-                 resource=None
+                 resource=None,
+                 timestamp=None,
+                 timeout=30 # first: to make connection, second: to read data. int value will be time for both combined.
                  ):
         self.starttime = starttime
         self.endtime = endtime
@@ -21,14 +25,16 @@ class RIPEStatRequestObj:
         self.query = None
         self.last_query_time = None
         self.last_query_timestamp = None
+        self.timestamp = timestamp
+        self.timeout = timeout
 
     def get_request(self, endpoint):
         start_time = time.time()
-        resp = Session.get(endpoint + f'&sourceapp={SOURCEAPP}')
-        while resp.status_code == 400:
-            time.sleep(5)
-            print(endpoint)
-            resp = Session.get(endpoint + f'&sourceapp={SOURCEAPP}')
+        try:
+            resp = Session.get(endpoint + f'&sourceapp={SOURCEAPP}', timeout=self.timeout)
+        except Exception:
+            return 0
+
         respObj = RIPEStatReturn(resp)
         end_time = time.time()
         data = respObj.get_data()
@@ -87,6 +93,8 @@ class BGP(RIPEStatRequestObj):
     def get_bgp_announce(self, starttime, endtime):
         # Get the announce, withdraw, update messages from BGP in a given timeframe
         data =  self.get_request(endpoints.BGP_UPDATES(asn=self.resource, starttime=starttime, endtime=endtime))
+        if data == 0:
+            return data
         updates_list = data['updates']
         update_record_list = []
         for update in updates_list:

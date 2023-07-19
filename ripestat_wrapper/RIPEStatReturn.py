@@ -6,7 +6,11 @@ class RIPEStatReturn():
         self.code = response.status_code
         self.reason = response.reason
         self.endpoint = response.url
-        self.body = json.loads(response.text)
+        try:
+            self.body = json.loads(response.text)
+        except json.JSONDecodeError:
+            print(response.text)
+            pass
 
         self.query_time = self.body['time']
         self.data = self.body['data']

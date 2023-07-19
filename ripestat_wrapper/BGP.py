@@ -6,7 +6,8 @@ class BGPRecord:
         self.community = community 
 
     def is_blackhole(self):
-        assert self.community is not None, 'No community path detected'
+        if self.community is None:
+            return False
         if '666' in ':'.join(self.community).split(':'):
             return True
         else:
