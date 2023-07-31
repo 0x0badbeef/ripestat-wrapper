@@ -1,4 +1,4 @@
-BASE = 'https://stat.ripe.net/data'
+BASE = 'http://stat.ripe.net/data'
 COUNTRY_ASN_LIST = lambda country, date : f'{BASE}/country-resource-list/data.json?resource={country}&time={date}'
 BGP_UPDATE_ACTIVITY = lambda asn, starttime, endtime : f'{BASE}/bgp-update-activity/data.json?resource={asn}&starttime={starttime}&endtime={endtime}'
 BGP_UPDATES = lambda asn, starttime, endtime : f'{BASE}/bgp-updates/data.json?resource={asn}&starttime={starttime}&endtime={endtime}'
